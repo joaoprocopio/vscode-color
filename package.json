@@ -3,7 +3,8 @@
   "publisher": "joaoprocopio",
   "name": "vscode-color-utils",
   "displayName": "Color Utils",
-  "version": "0.0.2",
+  "version": "0.0.4",
+  "packageManager": "pnpm@10.15.1",
   "categories": [
     "Formatters"
   ],
@@ -15,8 +16,9 @@
     "vscode": "^1.103.0",
     "node": ">=22.11.0"
   },
-  "main": "./out/extension.js",
   "icon": "icon.png",
+  "main": "./out/extension.js",
+  "activationEvents": [],
   "contributes": {
     "commands": [
       {
@@ -39,31 +41,27 @@
   },
   "scripts": {
     "clean": "git clean -xdf out node_modules",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
+    "build": "tsdown",
+    "watch": "tsdown --watch",
     "lint": "eslint src",
-    "test": "vscode-test",
-    "vscode:package": "vsce package --out out",
-    "vscode:prepublish": "npm run compile",
-    "vscode:publish": "vsce publish"
+    "vscode:prepublish": "pnpm build",
+    "vscode:package": "vsce package --no-dependencies --out out",
+    "vscode:publish": "vsce publish --no-dependencies"
   },
   "dependencies": {
     "colorjs.io": "^0.5.2"
   },
   "devDependencies": {
-    "@types/mocha": "^10.0.10",
-    "@types/node": "22.x",
+    "@types/node": "^24.3.1",
     "@types/vscode": "^1.103.0",
     "@typescript-eslint/eslint-plugin": "^8.42.0",
     "@typescript-eslint/parser": "^8.42.0",
-    "@vscode/test-cli": "^0.0.11",
-    "@vscode/test-electron": "^2.5.2",
     "eslint": "^9.34.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "prettier": "^3.6.2",
+    "tsdown": "^0.14.2",
     "typescript": "^5.9.2"
   }
 }

@@ -9,3 +9,7 @@ vsc-extension-quickstart.md
 **/*.map
 **/*.ts
 **/.vscode-test.*
+.nvmrc
+TODO.md
+pnpm-lock.yaml
+tsdown.config.mjs
