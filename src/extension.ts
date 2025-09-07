@@ -40,6 +40,18 @@ const formats = {
   [Color in ColorFormat]: ConvertColorFormatCommand<Color>;
 };
 
+function convertAndReplace(
+  command: ConvertColorFormatCommand<ColorFormat>,
+): void {
+  // This is valid because `when == editor.hasSelection`
+  const editor = vscode.window.activeTextEditor!;
+
+  for (const selection of editor.selections) {
+    const text = editor.document.getText(selection);
+    console.log(text);
+  }
+}
+
 export function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand(
     "vscode-color.convert",
@@ -53,7 +65,9 @@ export function activate(context: vscode.ExtensionContext) {
           },
         );
 
-      console.log(command);
+      if (!command) return undefined;
+
+      convertAndReplace(command);
     },
   );
 
