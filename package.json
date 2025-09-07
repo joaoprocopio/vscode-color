@@ -1,5 +1,6 @@
 {
   "name": "vscode-color",
+  "type": "module",
   "displayName": "vscode-color",
   "version": "0.0.1",
   "engines": {
@@ -16,7 +17,15 @@
         "command": "vscode-color.convert",
         "title": "Color: Convert color format"
       }
-    ]
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "vscode-color.convert",
+          "when": "editor.hasSelection"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "pnpm run compile",
