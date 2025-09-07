@@ -60,7 +60,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(diagnosticCollection);
 
   const disposable = vscode.commands.registerCommand(
-    "vscode-color.convert",
+    "vscode-color-utils.convert",
     async () => {
       const command =
         await vscode.window.showQuickPick<ConvertColorFormatCommand>(

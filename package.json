@@ -1,39 +1,50 @@
 {
-  "name": "vscode-color",
   "type": "module",
-  "displayName": "vscode-color",
+  "publisher": "joaoprocopio",
+  "name": "vscode-color-utils",
+  "displayName": "Color Utils",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/joaoprocopio/vscode-color-utils.git"
+  },
   "engines": {
-    "vscode": "^1.103.0"
+    "vscode": "^1.103.0",
+    "node": ">=22.11.0"
   },
   "categories": [
-    "Other"
+    "Formatters"
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "vscode-color.convert",
+        "command": "vscode-color-utils.convert",
         "title": "Color: Convert color format"
       }
     ],
     "menus": {
       "commandPalette": [
         {
-          "command": "vscode-color.convert",
+          "command": "vscode-color-utils.convert",
           "when": "editor.hasSelection"
         }
       ]
     }
   },
   "scripts": {
-    "vscode:prepublish": "pnpm run compile",
+    "vscode:prepublish": "npm run compile",
+    "vscode:package": "vsce package --out out",
+    "vscode:publish": "vsce publish",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "pnpm run compile && pnpm run lint",
+    "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test"
+  },
+  "dependencies": {
+    "colorjs.io": "^0.5.2"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
@@ -49,8 +60,5 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "prettier": "^3.6.2",
     "typescript": "^5.9.2"
-  },
-  "dependencies": {
-    "colorjs.io": "^0.5.2"
   }
 }
