@@ -1,21 +1,22 @@
 import Color from "colorjs.io";
 import * as vscode from "vscode";
 
-type ColorFormat = "hex" | "oklch" | "hsl";
+type ColorFormat = "hex" | "oklch" | "hsl" | "rgb";
 
 type ConvertColorFormatCommand<Color extends ColorFormat = ColorFormat> = {
   type: Color;
-  convert: (input: string) => void;
+  convert: (input: string) => string;
 } & vscode.QuickPickItem;
 
-const formats = {
+const conversions = {
   hex: {
     type: "hex",
     label: "Hex",
     description: "Convert color format to hex",
     convert: (input) => {
-      const color = new Color(input);
-      console.log(color);
+      let color = new Color(input);
+      color = color.to("srgb");
+      return color.toString({ format: "hex" });
     },
   },
   oklch: {
@@ -23,8 +24,9 @@ const formats = {
     label: "OKLCH",
     description: "Convert color format to oklch",
     convert: (input) => {
-      const color = new Color(input);
-      console.log(color);
+      let color = new Color(input);
+      color = color.to("oklch");
+      return color.toString();
     },
   },
   hsl: {
@@ -32,33 +34,37 @@ const formats = {
     label: "HSL",
     description: "Convert color format to hsl/hsla",
     convert: (input) => {
-      const color = new Color(input);
-      console.log(color);
+      let color = new Color(input);
+      color = color.to("hsl");
+      return color.toString();
+    },
+  },
+  rgb: {
+    type: "rgb",
+    label: "RGB",
+    description: "Convert color format to rgb/rgba",
+    convert: (input) => {
+      let color = new Color(input);
+      color = color.to("srgb");
+      return color.toString({});
     },
   },
 } as const satisfies {
   [Color in ColorFormat]: ConvertColorFormatCommand<Color>;
 };
 
-function convertAndReplace(
-  command: ConvertColorFormatCommand<ColorFormat>,
-): void {
-  // This is valid because `when == editor.hasSelection`
-  const editor = vscode.window.activeTextEditor!;
-
-  for (const selection of editor.selections) {
-    const text = editor.document.getText(selection);
-    console.log(text);
-  }
-}
-
 export function activate(context: vscode.ExtensionContext) {
+  const diagnosticCollection =
+    vscode.languages.createDiagnosticCollection("colorParser");
+
+  context.subscriptions.push(diagnosticCollection);
+
   const disposable = vscode.commands.registerCommand(
     "vscode-color.convert",
     async () => {
       const command =
         await vscode.window.showQuickPick<ConvertColorFormatCommand>(
-          Object.values(formats),
+          Object.values(conversions),
           {
             placeHolder: "Which color format would you want to convert to?",
             matchOnDescription: true,
@@ -67,7 +73,34 @@ export function activate(context: vscode.ExtensionContext) {
 
       if (!command) return undefined;
 
-      convertAndReplace(command);
+      const editor = vscode.window.activeTextEditor!;
+      const diagnostics: vscode.Diagnostic[] = [];
+
+      editor.edit((edit) => {
+        for (const selection of editor.selections) {
+          const text = editor.document.getText(selection);
+
+          try {
+            let converted = command.convert(text);
+
+            edit.replace(selection, converted);
+          } catch (error) {
+            console.error(error);
+
+            // TODO: do better error diagnostics
+            // TODO: look for text movement to update diagnostic
+            const diagnostic = new vscode.Diagnostic(
+              selection.with(),
+              `Failed to parse "${text}" as a color.`,
+              vscode.DiagnosticSeverity.Error,
+            );
+
+            diagnostics.push(diagnostic);
+          }
+        }
+      });
+
+      diagnosticCollection.set(editor.document.uri, diagnostics);
     },
   );
 
