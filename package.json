@@ -1,7 +1,6 @@
 {
-  "name": "vscode-color-convert",
-  "displayName": "vscode-color-convert",
-  "description": "Convert color formats.",
+  "name": "vscode-color",
+  "displayName": "vscode-color",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.103.0"
@@ -14,8 +13,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "vscode-color-convert.helloWorld",
-        "title": "Hello World"
+        "command": "vscode-color.convert",
+        "title": "Color: Convert color format"
       }
     ]
   },
@@ -41,5 +40,8 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "prettier": "^3.6.2",
     "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "colorjs.io": "^0.5.2"
   }
 }
