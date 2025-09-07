@@ -1,0 +1,3 @@
+- do better error diagnostics
+- look for text movement to update diagnostic
+- implement tree-shake based bundling for smaller sizes

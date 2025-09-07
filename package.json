@@ -3,7 +3,10 @@
   "publisher": "joaoprocopio",
   "name": "vscode-color-utils",
   "displayName": "Color Utils",
-  "version": "0.0.1",
+  "version": "0.0.2",
+  "categories": [
+    "Formatters"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/joaoprocopio/vscode-color-utils.git"
@@ -12,16 +15,17 @@
     "vscode": "^1.103.0",
     "node": ">=22.11.0"
   },
-  "categories": [
-    "Formatters"
-  ],
-  "activationEvents": [],
   "main": "./out/extension.js",
+  "icon": "icon.png",
   "contributes": {
     "commands": [
       {
         "command": "vscode-color-utils.convert",
-        "title": "Color: Convert color format"
+        "title": "Color Utils: Convert color format"
+      },
+      {
+        "command": "vscode-color-utils.clear",
+        "title": "Color Utils: Clear diagnostics"
       }
     ],
     "menus": {
@@ -34,14 +38,15 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "vscode:package": "vsce package --out out",
-    "vscode:publish": "vsce publish",
+    "clean": "git clean -xdf out node_modules",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "vscode:package": "vsce package --out out",
+    "vscode:prepublish": "npm run compile",
+    "vscode:publish": "vsce publish"
   },
   "dependencies": {
     "colorjs.io": "^0.5.2"

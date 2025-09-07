@@ -3,51 +3,35 @@ import * as vscode from "vscode";
 
 type ColorFormat = "hex" | "oklch" | "hsl" | "rgb";
 
-type ConvertColorFormatCommand<Color extends ColorFormat = ColorFormat> = {
-  type: Color;
+type ConvertColorFormatCommand<C extends ColorFormat = ColorFormat> = {
+  format: C;
   convert: (input: string) => string;
 } & vscode.QuickPickItem;
 
 const conversions = {
   hex: {
-    type: "hex",
+    format: "hex",
     label: "Hex",
     description: "Convert color format to hex",
-    convert: (input) => {
-      let color = new Color(input);
-      color = color.to("srgb");
-      return color.toString({ format: "hex" });
-    },
+    convert: (input) => new Color(input).to("srgb").toString({ format: "hex" }),
   },
   oklch: {
-    type: "oklch",
+    format: "oklch",
     label: "OKLCH",
     description: "Convert color format to oklch",
-    convert: (input) => {
-      let color = new Color(input);
-      color = color.to("oklch");
-      return color.toString();
-    },
+    convert: (input) => new Color(input).to("oklch").toString(),
   },
   hsl: {
-    type: "hsl",
+    format: "hsl",
     label: "HSL",
     description: "Convert color format to hsl/hsla",
-    convert: (input) => {
-      let color = new Color(input);
-      color = color.to("hsl");
-      return color.toString();
-    },
+    convert: (input) => new Color(input).to("hsl").toString(),
   },
   rgb: {
-    type: "rgb",
+    format: "rgb",
     label: "RGB",
     description: "Convert color format to rgb/rgba",
-    convert: (input) => {
-      let color = new Color(input);
-      color = color.to("srgb");
-      return color.toString({});
-    },
+    convert: (input) => new Color(input).to("srgb").toString(),
   },
 } as const satisfies {
   [Color in ColorFormat]: ConvertColorFormatCommand<Color>;
@@ -55,11 +39,14 @@ const conversions = {
 
 export function activate(context: vscode.ExtensionContext) {
   const diagnosticCollection =
-    vscode.languages.createDiagnosticCollection("colorParser");
+    vscode.languages.createDiagnosticCollection("color-utils");
 
-  context.subscriptions.push(diagnosticCollection);
+  const clear = vscode.commands.registerCommand(
+    "vscode-color-utils.clear",
+    () => diagnosticCollection.clear(),
+  );
 
-  const disposable = vscode.commands.registerCommand(
+  const convert = vscode.commands.registerCommand(
     "vscode-color-utils.convert",
     async () => {
       const command =
@@ -84,15 +71,11 @@ export function activate(context: vscode.ExtensionContext) {
             let converted = command.convert(text);
 
             edit.replace(selection, converted);
-          } catch (error) {
-            console.error(error);
-
-            // TODO: do better error diagnostics
-            // TODO: look for text movement to update diagnostic
+          } catch {
             const diagnostic = new vscode.Diagnostic(
               selection.with(),
               `Failed to parse "${text}" as a color.`,
-              vscode.DiagnosticSeverity.Error,
+              vscode.DiagnosticSeverity.Information,
             );
 
             diagnostics.push(diagnostic);
@@ -104,5 +87,7 @@ export function activate(context: vscode.ExtensionContext) {
     },
   );
 
-  context.subscriptions.push(disposable);
+  context.subscriptions.push(diagnosticCollection);
+  context.subscriptions.push(clear);
+  context.subscriptions.push(convert);
 }
